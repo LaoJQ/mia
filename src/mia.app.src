@@ -1,0 +1,15 @@
+{application, mia,
+ [{description, "mia"},
+  {vsn, "0.1.0"},
+  {registered, []},
+  {mod, { mia_app, []}},
+  {applications,
+   [kernel,
+    stdlib
+   ]},
+  {env,[]},
+  {modules, []},
+
+  {maintainers, []},
+  {links, []}
+ ]}.

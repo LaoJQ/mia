@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+error_msg() {
+    echo -e "`date +"%F %T"` [error] $@"
+    exit 1
+}
+
+info_msg() {
+    echo -e "`date +"%F %T"` [info] $@"
+}
+
+warning_msg() {
+    echo -e "`date +"%F %T"` [warning] $@"
+}
+
+SCRIPT_DIR=$(cd ${0%/*} && pwd)
+PROJECT_HOME=${SCRIPT_DIR%/*}
+CONFIG_FILE=$PROJECT_HOME/conf/sys.config
+ERL=erl
+NODE_ARG=" -name mia@localhost "
+EBIN_ARG=" -pa _build/default/lib/mia/ebin/ "
+
+if [ -f "$CONFIG_FILE" ]; then
+    info_msg "CONFIG_FILE: $CONFIG_FILE"
+    CONFIG_ARG=" -config $CONFIG_FILE "
+else
+    warning_msg "CONFIG_FILE: $CONFIG_FILE 不存在"
+    CONFIG_ARG=" "
+fi
+
+START_MIA_ARG=" -s mia start "
+
+$ERL $NODE_ARG $EBIN_ARG $CONFIG_ARG $START_MIA_ARG
+
