@@ -19,7 +19,7 @@ CONFIG_FILE=$PROJECT_HOME/conf/sys.config
 ERL=erl
 NODE_ARG=" -name mia@localhost "
 BASE_AGR=" -smp auto +K true +A 120 +W w +P 2000000 "
-EBIN_ARG=" -pa _build/default/lib/mia/ebin/ "
+EBIN_ARG=" -pa _build/default/lib/*/ebin/ "
 
 if [ -f "$CONFIG_FILE" ]; then
     info_msg "CONFIG_FILE: $CONFIG_FILE"

@@ -1,1 +1,4 @@
-[].
+[{<<"reloader">>,
+  {git,"https://github.com/roowe/reloader",
+       {ref,"bddd3d366afbf75b9a48eaca21b31afd0f21ffb6"}},
+  0}].
