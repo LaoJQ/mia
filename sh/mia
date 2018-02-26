@@ -18,6 +18,7 @@ PROJECT_HOME=${SCRIPT_DIR%/*}
 CONFIG_FILE=$PROJECT_HOME/conf/sys.config
 ERL=erl
 NODE_ARG=" -name mia@localhost "
+BASE_AGR=" -smp auto +K true +A 120 +W w +P 2000000 "
 EBIN_ARG=" -pa _build/default/lib/mia/ebin/ "
 
 if [ -f "$CONFIG_FILE" ]; then
@@ -30,5 +31,5 @@ fi
 
 START_MIA_ARG=" -s mia start "
 
-$ERL $NODE_ARG $EBIN_ARG $CONFIG_ARG $START_MIA_ARG
+$ERL $NODE_ARG $BASE_AGR $EBIN_ARG $CONFIG_ARG $START_MIA_ARG
 
