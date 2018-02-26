@@ -1,7 +1,8 @@
 -module(mia_misc).
 
 -export([
-         get_env/1, get_env/2
+         get_env/1, get_env/2,
+         start/1
         ]).
 
 get_env(Env) ->
@@ -10,3 +11,13 @@ get_env(Env) ->
 get_env(Env, Default) ->
     application:get_env(mia, Env, Default).
 
+start(App) ->
+    start_ok(App, application:start(App)).
+
+start_ok(_App, ok) -> ok;
+start_ok(_App, {error, {already_started, _App}}) -> ok;
+start_ok(App, {error, {not_started, Dep}}) ->
+    ok = start(Dep),
+    start(App);
+start_ok(App, {error, Reason}) ->
+    erlang:error({app_start_failed, App, Reason}).

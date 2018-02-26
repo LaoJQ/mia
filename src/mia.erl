@@ -29,7 +29,7 @@
         ]).
 
 start() ->
-    application:start(mia).
+    mia_misc:start(mia).
 
 
 dirty_read(Table, Key) ->
