@@ -8,7 +8,7 @@ init() ->
     set_mnesia_dir(),
     case mnesia:system_info(use_dir) of
         true ->
-            mnesia:start();
+            start_mnesia_and_wait();
         false ->
             case mia_misc:get_env(mia_schema) of
                 true ->
@@ -22,7 +22,7 @@ init() ->
                 _ ->
                     ignore
             end,
-            mnesia:start(),
+            start_mnesia_and_wait(),
             create_tables()
     end.
 
@@ -43,6 +43,15 @@ ensure_mnesia_dir() ->
         ok ->
             ok
     end.
+
+start_mnesia_and_wait() ->
+    mia_misc:do_with_time_cost(
+      fun() ->
+              mnesia:start(),
+              TableList = mnesia:system_info(tables),
+              mnesia:wait_for_tables(TableList, infinity)
+      end,
+      "Start mnesia.   ", []).
 
 create_tables() ->
     case mia_misc:get_env(mia_table_def_module) of

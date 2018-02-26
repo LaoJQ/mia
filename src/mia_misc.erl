@@ -2,7 +2,8 @@
 
 -export([
          get_env/1, get_env/2,
-         start/1
+         start/1,
+         do_with_time_cost/3
         ]).
 
 get_env(Env) ->
@@ -21,3 +22,12 @@ start_ok(App, {error, {not_started, Dep}}) ->
     start(App);
 start_ok(App, {error, Reason}) ->
     erlang:error({app_start_failed, App, Reason}).
+
+do_with_time_cost(Fun, PrintStr, PrintArgs) ->
+    T1 = erlang:monotonic_time(),
+
+    Fun(),
+
+    T2 = erlang:monotonic_time(),
+    Cost = erlang:convert_time_unit(T2 - T1, native, millisecond),
+    io:format(PrintStr ++ "Cost: ~p millisecond~n", PrintArgs ++ [Cost]).
