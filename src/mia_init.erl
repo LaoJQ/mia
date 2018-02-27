@@ -8,11 +8,18 @@ init() ->
     set_mnesia_dir(),
     case mnesia:system_info(use_dir) of
         true ->
+            case mia_upgrade:check_upgrade() of
+                false ->
+                    ok;
+                {true, NewVersion} ->
+                    mia_upgrade:do_upgrade()
+            end,
             start_mnesia_and_wait();
         false ->
             case mia_misc:get_env(mia_schema) of
                 true ->
                     ensure_mnesia_dir(),
+                    mia_upgrade:set_schema_version(),
                     case mnesia:create_schema([node()]) of
                         {error, Reason} ->
                             exit({error, Reason});
@@ -54,16 +61,13 @@ start_mnesia_and_wait() ->
       "Start mnesia.   ", []).
 
 create_tables() ->
-    case mia_misc:get_env(mia_table_def_module) of
-        undefined ->
-            exit({error, {"mia_table_def_module isn't' provided"}});
-        TableDefModule ->
-            lists:foreach(fun(TabDef) ->
-                                  case mnesia:create_table(TabDef) of
-                                      {atomic, ok} ->
-                                          ok;
-                                      Err ->
-                                          exit({error, {Err, TabDef}})
-                                  end
-                          end, TableDefModule:definitions())
-    end.
+    TableDefModule = mia_misc:mia_table_def_module(),
+    lists:foreach(fun(TabDef) ->
+                          case mnesia:create_table(TabDef) of
+                              {atomic, ok} ->
+                                  ok;
+                              Err ->
+                                  exit({error, {Err, TabDef}})
+                          end
+                  end, TableDefModule:definitions()).
+

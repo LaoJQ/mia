@@ -3,7 +3,9 @@
 -export([
          get_env/1, get_env/2,
          start/1,
-         do_with_time_cost/3
+         do_with_time_cost/3,
+         mia_table_def_module/0,
+         md5_term/1
         ]).
 
 get_env(Env) ->
@@ -31,3 +33,24 @@ do_with_time_cost(Fun, PrintStr, PrintArgs) ->
     T2 = erlang:monotonic_time(),
     Cost = erlang:convert_time_unit(T2 - T1, native, millisecond),
     io:format(PrintStr ++ "Cost: ~p millisecond~n", PrintArgs ++ [Cost]).
+
+mia_table_def_module() ->
+    case mia_misc:get_env(mia_table_def_module) of
+        undefined ->
+            exit({error, {"mia_table_def_module isn't' provided"}});
+        TableDefModule ->
+            TableDefModule
+    end.
+
+md5_term(Term) ->
+    to_hex(erlang:md5(io_lib:format("~w", [Term]))).
+
+to_hex([]) ->
+    [];
+to_hex(Bin) when is_binary(Bin) ->
+    list_to_binary(to_hex(binary_to_list(Bin)));
+to_hex([H|T]) ->
+    [to_digit(H div 16), to_digit(H rem 16) | to_hex(T)].
+
+to_digit(N) when N < 10 -> $0 + N;
+to_digit(N) -> $a + N-10.
